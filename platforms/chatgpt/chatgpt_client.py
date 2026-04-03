@@ -669,7 +669,7 @@ class ChatGPTClient:
             self._log(f"注册异常: {e}")
             return False, str(e)
 
-    def send_email_otp(self):
+    def send_email_otp(self, referer=None):
         """触发发送邮箱验证码"""
         self._log("触发发送验证码...")
         url = f"{self.AUTH}/api/accounts/email-otp/send"
@@ -681,13 +681,28 @@ class ChatGPTClient:
                 headers=self._headers(
                     url,
                     accept="application/json, text/plain, */*",
-                    referer=f"{self.AUTH}/create-account/password",
+                    referer=referer or f"{self.AUTH}/create-account/password",
                     fetch_site="same-origin",
                 ),
                 allow_redirects=True,
                 timeout=30,
             )
-            return r.status_code == 200
+            self._log(f"验证码发送状态: {r.status_code}")
+            if r.status_code != 200:
+                self._log(f"验证码发送失败响应: {r.text[:180]}")
+                return False
+
+            try:
+                payload = r.json()
+            except Exception:
+                payload = {}
+
+            if isinstance(payload, dict) and payload:
+                next_state = self._state_from_payload(payload, current_url=str(r.url) or url)
+                self._log(f"验证码发送响应: {describe_flow_state(next_state)}")
+            else:
+                self._log("验证码发送响应: 非 JSON（按已触发处理）")
+            return True
         except Exception as e:
             self._log(f"发送验证码失败: {e}")
             return False
@@ -912,6 +927,8 @@ class ChatGPTClient:
         account_created = False
         seen_states = {}
 
+        otp_send_attempts = 0
+
         for _ in range(12):
             signature = self._state_signature(state)
             seen_states[signature] = seen_states.get(signature, 0) + 1
@@ -935,14 +952,31 @@ class ChatGPTClient:
                 if not success:
                     return False, f"注册失败: {msg}"
                 register_submitted = True
-                if not self.send_email_otp():
+                otp_send_attempts += 1
+                self._log(f"发送注册验证码: attempt={otp_send_attempts}")
+                if not self.send_email_otp(
+                    referer=state.current_url or state.continue_url or f"{self.AUTH}/create-account/password"
+                ):
                     self._log("发送验证码接口返回失败，继续等待邮箱中的验证码...")
+                else:
+                    self._log("发送注册验证码成功，进入收码阶段")
                 state = self._state_from_url(f"{self.AUTH}/email-verification")
                 continue
 
             if self._state_is_email_otp(state):
                 self._log("等待邮箱验证码...")
                 otp_code = skymail_client.wait_for_verification_code(email, timeout=90)
+                if not otp_code:
+                    self._log("首次等待未收到验证码，尝试重发一次 email-otp/send 后再等待 60s")
+                    otp_send_attempts += 1
+                    resend_ok = self.send_email_otp(
+                        referer=state.current_url or state.continue_url or f"{self.AUTH}/email-verification"
+                    )
+                    if resend_ok:
+                        self._log(f"重发验证码成功: attempt={otp_send_attempts}")
+                    else:
+                        self._log(f"重发验证码失败: attempt={otp_send_attempts}")
+                    otp_code = skymail_client.wait_for_verification_code(email, timeout=60)
                 if not otp_code:
                     return False, "未收到验证码"
 
