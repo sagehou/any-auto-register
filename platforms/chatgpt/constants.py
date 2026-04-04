@@ -62,10 +62,12 @@ OPENAI_API_ENDPOINTS = {
     "signup": "https://auth.openai.com/api/accounts/authorize/continue",
     "register": "https://auth.openai.com/api/accounts/user/register",
     "password_verify": "https://auth.openai.com/api/accounts/password/verify",
+    "passwordless_send_otp": "https://auth.openai.com/api/accounts/passwordless/send-otp",
     "send_otp": "https://auth.openai.com/api/accounts/email-otp/send",
     "validate_otp": "https://auth.openai.com/api/accounts/email-otp/validate",
     "create_account": "https://auth.openai.com/api/accounts/create_account",
     "select_workspace": "https://auth.openai.com/api/accounts/workspace/select",
+    "select_organization": "https://auth.openai.com/api/accounts/organization/select",
 }
 
 # OpenAI 页面类型（用于判断账号状态）
@@ -150,8 +152,8 @@ OPENAI_VERIFICATION_KEYWORDS = [
 ]
 
 # 密码生成
-PASSWORD_CHARSET = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
-DEFAULT_PASSWORD_LENGTH = 12
+PASSWORD_CHARSET = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%"
+DEFAULT_PASSWORD_LENGTH = 16
 
 # 用户信息生成（用于注册）
 MIN_REGISTRATION_AGE = 20
@@ -243,7 +245,7 @@ DEFAULT_SETTINGS = [
     ("proxy.port", "7890", "代理端口", "proxy"),
     ("registration.max_retries", "3", "最大重试次数", "registration"),
     ("registration.timeout", "120", "超时时间（秒）", "registration"),
-    ("registration.default_password_length", "12", "默认密码长度", "registration"),
+    ("registration.default_password_length", "16", "默认密码长度", "registration"),
     ("webui.host", "0.0.0.0", "Web UI 监听主机", "webui"),
     ("webui.port", "8000", "Web UI 监听端口", "webui"),
     ("webui.debug", "true", "调试模式", "webui"),

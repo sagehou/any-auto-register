@@ -42,17 +42,31 @@ export default function RegisterTaskPage() {
         executor_type: normalizeExecutorForPlatform(currentPlatform, cfg.default_executor),
         captcha_solver: cfg.default_captcha_solver || 'yescaptcha',
         mail_provider: cfg.mail_provider || 'luckmail',
+        applemail_base_url: cfg.applemail_base_url || 'https://www.appleemail.top',
+        applemail_pool_dir: cfg.applemail_pool_dir || 'mail',
+        applemail_pool_file: cfg.applemail_pool_file || '',
+        applemail_mailboxes: cfg.applemail_mailboxes || 'INBOX,Junk',
         yescaptcha_key: cfg.yescaptcha_key || '',
         moemail_api_url: cfg.moemail_api_url || '',
+        moemail_api_key: cfg.moemail_api_key || '',
         skymail_api_base: cfg.skymail_api_base || 'https://api.skymail.ink',
         skymail_token: cfg.skymail_token || '',
         skymail_domain: cfg.skymail_domain || '',
+        cloudmail_api_base: cfg.cloudmail_api_base || '',
+        cloudmail_admin_email: cfg.cloudmail_admin_email || '',
+        cloudmail_admin_password: cfg.cloudmail_admin_password || '',
+        cloudmail_domain: cfg.cloudmail_domain || '',
+        cloudmail_subdomain: cfg.cloudmail_subdomain || '',
+        cloudmail_timeout: cfg.cloudmail_timeout || 30,
         laoudo_auth: cfg.laoudo_auth || '',
         laoudo_email: cfg.laoudo_email || '',
         laoudo_account_id: cfg.laoudo_account_id || '',
         gptmail_base_url: cfg.gptmail_base_url || 'https://mail.chatgpt.org.uk',
         gptmail_api_key: cfg.gptmail_api_key || '',
         gptmail_domain: cfg.gptmail_domain || '',
+        opentrashmail_api_url: cfg.opentrashmail_api_url || '',
+        opentrashmail_domain: cfg.opentrashmail_domain || '',
+        opentrashmail_password: cfg.opentrashmail_password || '',
         maliapi_base_url: cfg.maliapi_base_url || 'https://maliapi.215.im/v1',
         maliapi_api_key: cfg.maliapi_api_key || '',
         maliapi_domain: cfg.maliapi_domain || '',
@@ -64,12 +78,14 @@ export default function RegisterTaskPage() {
         freemail_admin_token: cfg.freemail_admin_token || '',
         freemail_username: cfg.freemail_username || '',
         freemail_password: cfg.freemail_password || '',
+        freemail_domain: cfg.freemail_domain || '',
         cfworker_api_url: cfg.cfworker_api_url || '',
         cfworker_admin_token: cfg.cfworker_admin_token || '',
         cfworker_custom_auth: cfg.cfworker_custom_auth || '',
         cfworker_domain_override: '',
         cfworker_subdomain: cfg.cfworker_subdomain || '',
         cfworker_random_subdomain: parseBooleanConfigValue(cfg.cfworker_random_subdomain),
+        cfworker_random_name_subdomain: parseBooleanConfigValue(cfg.cfworker_random_name_subdomain),
         cfworker_fingerprint: cfg.cfworker_fingerprint || '',
         smstome_cookie: cfg.smstome_cookie || '',
         smstome_country_slugs: cfg.smstome_country_slugs || '',
@@ -89,20 +105,34 @@ export default function RegisterTaskPage() {
     const values = await form.validateFields()
     const registerExtra = {
       mail_provider: values.mail_provider,
+      applemail_base_url: values.applemail_base_url,
+      applemail_pool_dir: values.applemail_pool_dir,
+      applemail_pool_file: values.applemail_pool_file,
+      applemail_mailboxes: values.applemail_mailboxes,
       laoudo_auth: values.laoudo_auth,
       laoudo_email: values.laoudo_email,
       laoudo_account_id: values.laoudo_account_id,
       gptmail_base_url: values.gptmail_base_url,
       gptmail_api_key: values.gptmail_api_key,
       gptmail_domain: values.gptmail_domain,
+      opentrashmail_api_url: values.opentrashmail_api_url,
+      opentrashmail_domain: values.opentrashmail_domain,
+      opentrashmail_password: values.opentrashmail_password,
       maliapi_base_url: values.maliapi_base_url,
       maliapi_api_key: values.maliapi_api_key,
       maliapi_domain: values.maliapi_domain,
       maliapi_auto_domain_strategy: values.maliapi_auto_domain_strategy,
       moemail_api_url: values.moemail_api_url,
+      moemail_api_key: values.moemail_api_key,
       skymail_api_base: values.skymail_api_base,
       skymail_token: values.skymail_token,
       skymail_domain: values.skymail_domain,
+      cloudmail_api_base: values.cloudmail_api_base,
+      cloudmail_admin_email: values.cloudmail_admin_email,
+      cloudmail_admin_password: values.cloudmail_admin_password,
+      cloudmail_domain: values.cloudmail_domain,
+      cloudmail_subdomain: values.cloudmail_subdomain,
+      cloudmail_timeout: values.cloudmail_timeout,
       duckmail_api_url: values.duckmail_api_url,
       duckmail_provider_url: values.duckmail_provider_url,
       duckmail_bearer: values.duckmail_bearer,
@@ -110,12 +140,14 @@ export default function RegisterTaskPage() {
       freemail_admin_token: values.freemail_admin_token,
       freemail_username: values.freemail_username,
       freemail_password: values.freemail_password,
+      freemail_domain: values.freemail_domain,
       cfworker_api_url: values.cfworker_api_url,
       cfworker_admin_token: values.cfworker_admin_token,
       cfworker_custom_auth: values.cfworker_custom_auth,
       cfworker_domain_override: values.cfworker_domain_override,
       cfworker_subdomain: values.cfworker_subdomain,
       cfworker_random_subdomain: values.cfworker_random_subdomain,
+      cfworker_random_name_subdomain: values.cfworker_random_name_subdomain,
       cfworker_fingerprint: values.cfworker_fingerprint,
       smstome_cookie: values.smstome_cookie,
       smstome_country_slugs: values.smstome_country_slugs,
@@ -198,7 +230,11 @@ export default function RegisterTaskPage() {
         executor_type: 'protocol',
         captcha_solver: 'yescaptcha',
         mail_provider: 'luckmail',
+        applemail_base_url: 'https://www.appleemail.top',
+        applemail_pool_dir: 'mail',
+        applemail_mailboxes: 'INBOX,Junk',
         gptmail_base_url: 'https://mail.chatgpt.org.uk',
+        cloudmail_timeout: 30,
         count: 1,
         concurrency: 1,
         register_delay_seconds: 0,
@@ -263,11 +299,14 @@ export default function RegisterTaskPage() {
             <Select
               options={[
                 { value: 'luckmail', label: 'LuckMail' },
+                { value: 'applemail', label: 'AppleMail / 小苹果' },
                 { value: 'moemail', label: 'MoeMail (sall.cc)' },
                 { value: 'tempmail_lol', label: 'TempMail.lol' },
                 { value: 'skymail', label: 'SkyMail (CloudMail)' },
+                { value: 'cloudmail', label: 'CloudMail (genToken)' },
                 { value: 'maliapi', label: 'YYDS Mail / MaliAPI' },
                 { value: 'gptmail', label: 'GPTMail' },
+                { value: 'opentrashmail', label: 'OpenTrashMail' },
                 { value: 'duckmail', label: 'DuckMail' },
                 { value: 'freemail', label: 'Freemail' },
                 { value: 'laoudo', label: 'Laoudo' },
@@ -285,6 +324,28 @@ export default function RegisterTaskPage() {
               </Form.Item>
               <Form.Item name="skymail_domain" label="邮箱域名">
                 <Input placeholder="mail.example.com" />
+              </Form.Item>
+            </>
+          )}
+          {mailProvider === 'cloudmail' && (
+            <>
+              <Form.Item name="cloudmail_api_base" label="API Base" rules={[{ required: true, message: '请输入 CloudMail API 地址' }]}>
+                <Input placeholder="https://cloudmail.example.com" />
+              </Form.Item>
+              <Form.Item name="cloudmail_admin_email" label="管理员邮箱（可选）" extra="留空自动使用 admin@域名">
+                <Input placeholder="admin@example.com" />
+              </Form.Item>
+              <Form.Item name="cloudmail_admin_password" label="管理员密码" rules={[{ required: true, message: '请输入 CloudMail 管理员密码' }]}>
+                <Input.Password placeholder="admin password" />
+              </Form.Item>
+              <Form.Item name="cloudmail_domain" label="邮箱域名（可选）" extra="支持单个域名，或逗号分隔多个域名">
+                <Input placeholder="mail.example.com,mail2.example.com" />
+              </Form.Item>
+              <Form.Item name="cloudmail_subdomain" label="子域名（可选）">
+                <Input placeholder="pool-a" />
+              </Form.Item>
+              <Form.Item name="cloudmail_timeout" label="请求超时秒数">
+                <InputNumber min={5} max={120} style={{ width: '100%' }} />
               </Form.Item>
             </>
           )}
@@ -323,6 +384,30 @@ export default function RegisterTaskPage() {
               </Form.Item>
             </>
           )}
+          {mailProvider === 'applemail' && (
+            <>
+              <Form.Item name="applemail_base_url" label="API URL">
+                <Input placeholder="https://www.appleemail.top" />
+              </Form.Item>
+              <Form.Item
+                name="applemail_pool_dir"
+                label="邮箱池目录"
+                extra="默认读取项目根目录下的 mail 目录。"
+              >
+                <Input placeholder="mail" />
+              </Form.Item>
+              <Form.Item
+                name="applemail_pool_file"
+                label="邮箱池文件（可选）"
+                extra="留空会自动使用目录中最新的 .json/.txt 文件；JSON 内容导入请到全局配置页操作。"
+              >
+                <Input placeholder="applemail_20260403.json" />
+              </Form.Item>
+              <Form.Item name="applemail_mailboxes" label="轮询文件夹">
+                <Input placeholder="INBOX,Junk" />
+              </Form.Item>
+            </>
+          )}
           {mailProvider === 'gptmail' && (
             <>
               <Form.Item name="gptmail_base_url" label="API URL">
@@ -337,6 +422,27 @@ export default function RegisterTaskPage() {
                 extra="已知当前可用域名时可直接本地拼装随机地址，省掉一次 generate-email 请求"
               >
                 <Input placeholder="example.com" />
+              </Form.Item>
+            </>
+          )}
+          {mailProvider === 'opentrashmail' && (
+            <>
+              <Form.Item name="opentrashmail_api_url" label="API URL" rules={[{ required: true, message: '请输入 OpenTrashMail 地址' }]}>
+                <Input placeholder="http://mail.example.com:8085" />
+              </Form.Item>
+              <Form.Item
+                name="opentrashmail_domain"
+                label="邮箱域名（可选）"
+                extra="已知 OpenTrashMail 当前启用域名时可直接本地拼装随机地址；留空则调用 /api/random 自动获取"
+              >
+                <Input placeholder="xiyoufm.com" />
+              </Form.Item>
+              <Form.Item
+                name="opentrashmail_password"
+                label="站点密码（可选）"
+                extra="当 OpenTrashMail 开启 PASSWORD 保护时填写，会自动追加到 JSON API 查询参数"
+              >
+                <Input.Password placeholder="留空表示未启用" />
               </Form.Item>
             </>
           )}
@@ -365,11 +471,33 @@ export default function RegisterTaskPage() {
               >
                 <Input placeholder="mail / pool-a" />
               </Form.Item>
-              <Form.Item name="cfworker_random_subdomain" label="随机子域名" valuePropName="checked">
+              <Form.Item name="cfworker_random_subdomain" valuePropName="checked">
                 <Checkbox>每次注册前随机生成一层子域名</Checkbox>
+              </Form.Item>
+              <Form.Item name="cfworker_random_name_subdomain" valuePropName="checked">
+                <Checkbox>使用随机姓名作为子域名</Checkbox>
               </Form.Item>
               <Form.Item name="cfworker_fingerprint" label="Fingerprint (可选)">
                 <Input placeholder="cfb82279f..." />
+              </Form.Item>
+            </>
+          )}
+          {mailProvider === 'freemail' && (
+            <>
+              <Form.Item name="freemail_api_url" label="API URL" rules={[{ required: true, message: '请输入 Freemail API 地址' }]}>
+                <Input placeholder="https://mail.example.com" />
+              </Form.Item>
+              <Form.Item name="freemail_admin_token" label="管理员令牌（可选）">
+                <Input.Password placeholder="JWT_TOKEN" />
+              </Form.Item>
+              <Form.Item name="freemail_username" label="用户名（可选）">
+                <Input placeholder="admin" />
+              </Form.Item>
+              <Form.Item name="freemail_password" label="密码（可选）">
+                <Input.Password placeholder="password" />
+              </Form.Item>
+              <Form.Item name="freemail_domain" label="邮箱域名（可选）" extra="填写后会优先使用该域名生成邮箱">
+                <Input placeholder="example.com" />
               </Form.Item>
             </>
           )}
